@@ -1,6 +1,6 @@
 module.exports = {
     plugins: [
-        ['effector-logger/babel-plugin', {skipEffectorPlugin: true, inspector: true}],
+        ['effector-logger/babel-plugin', {skipEffectorPlugin: true, inspector: false}],
         ['effector/babel-plugin', {reactSsr: true,}],
     ],
 }

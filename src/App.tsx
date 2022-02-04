@@ -1,48 +1,39 @@
 import { useState } from 'react'
 import logo from './logo.svg'
-import './App.css'
-import {useEvent, useStore} from "effector-react";
-import {$count, add} from "./model";
+// import './App.css'
+import {useEvent, useGate, useStore, useStoreMap} from "effector-react";
+import {$authors, $extras, Author, Gate, getExtras, toggleExtras} from "./model";
 
 function App() {
-  const count = useStore($count);
-  const addFn = useEvent(add)
+  const authors = useStore($authors)
+
+  useGate(Gate)
+
+  if (!authors) return <div>wait authors</div>
 
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>Hello Vite + React!</p>
-        <p>
-          <button type="button" onClick={() => addFn()}>
-            count is: {count}
-          </button>
-        </p>
-        <p>
-          Edit <code>App.tsx</code> and save to test HMR updates.
-        </p>
-        <p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-          {' | '}
-          <a
-            className="App-link"
-            href="https://vitejs.dev/guide/features.html"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Vite Docs
-          </a>
-        </p>
-      </header>
+      {authors.map(author => <AuthorPanel key={author.name} author={author}/>)}
     </div>
   )
+}
+
+function AuthorPanel({author}: {author: Author}) {
+  const toggleExtrasFn = useEvent(toggleExtras)
+
+  return <div>
+    <div>Name: {author.name}</div>
+    <button onClick={() => toggleExtrasFn(author)}>toggle extras</button>
+    <AuthorExtras author={author}/>
+  </div>
+}
+
+function AuthorExtras({author}: {author: Author}) {
+  const extras = useStoreMap($extras, e => e[author.name] ?? null)
+
+  if (!extras) return <div>Wait extras of {author.name}</div>
+
+  return <div>Extras of {author.name} is {extras.reverse}</div>
 }
 
 export default App
